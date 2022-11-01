@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Container } from "react-bootstrap";
+import BaseNavbar from "./components/navbar/Navbar";
+import HomeScreen from "./screens/homeScreen/HomeScreen";
+import LoginScreen from "./screens/loginScreen/LoginScreen";
+import "./App.css";
+import ResultScreen from "./screens/resultScreen/ResultScreen";
+
+function Layout({ children }) {
+    return (
+        <>
+            <BaseNavbar />
+            <Container>{children}</Container>
+        </>
+    );
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const { user } = useSelector((state) => state.auth);
+
+    return (
+        <Routes>
+            <Route
+                path="/"
+                element={
+                    !user ? (
+                        <Navigate replace to="/login" />
+                    ) : (
+                        <Layout>
+                            <HomeScreen />
+                        </Layout>
+                    )
+                }></Route>
+
+            <Route
+                path="/result"
+                element={
+                    !user ? (
+                        <Navigate replace to="/login" />
+                    ) : (
+                        <Layout>
+                            <ResultScreen />
+                        </Layout>
+                    )
+                }></Route>
+
+            <Route path="/login" element={user ? <Navigate replace to="/" /> : <LoginScreen />} />
+
+            <Route path="*" element={<Navigate replace to="/" />} />
+        </Routes>
+    );
 }
 
 export default App;
